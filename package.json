@@ -26,6 +26,7 @@
     },
     "dependencies": {
         "@libsql/client": "^0.15.15",
+        "dotenv": "^17.2.3",
         "fastify": "^5.6.1"
     }
 }
