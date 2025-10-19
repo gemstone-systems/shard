@@ -2,7 +2,9 @@ import "dotenv/config";
 
 const dbUrl = process.env.DB_URL;
 if (!dbUrl)
-    console.warn("Environment DB_URL not set. Defaulting to `:memory:`");
+    console.warn(
+        "Environment variable DB_URL not set. Defaulting to `:memory:`",
+    );
 export const DB_URL = dbUrl ?? ":memory:";
 
 const authToken = process.env.AUTH_TOKEN;
@@ -22,3 +24,10 @@ if (!encPassphrase)
     console.warn("No PASSPHRASE set. Contents will NOT be encrypted at rest");
 else console.log("PASSPHRASE is set. Contents will he encrypted at rest");
 export const ENC_PASSPHRASE = encPassphrase;
+
+const serverPort = process.env.SERVER_PORT;
+if (!serverPort)
+    console.warn(
+        "Environment variable SERVER_PORT not set. Defaulting to 7337",
+    );
+export const SERVER_PORT = Number.parseInt(serverPort ?? "7337");
