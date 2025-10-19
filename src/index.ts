@@ -34,7 +34,7 @@ const main = async () => {
 
 main()
     .then(() => {
-        console.log("Exited gracefully.");
+        console.log(`Server is running on port ${SERVER_PORT.toString()}`);
     })
     .catch((err: unknown) => {
         console.error("Something went wrong :(");
