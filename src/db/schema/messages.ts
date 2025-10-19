@@ -25,9 +25,9 @@ export const messagesTable = sqliteTable(
     ],
 );
 
-export const messagesSelectSchema = createSelectSchema(messagesTable);
-export const messageSelectSchemaArray = z.array(messagesSelectSchema);
-export const messagesInsertSchema = createInsertSchema(messagesTable);
+export const shardMessagesSelectSchema = createSelectSchema(messagesTable);
+export const shardMessageSelectSchemaArray = z.array(shardMessagesSelectSchema);
+export const shardMessagesInsertSchema = createInsertSchema(messagesTable);
 
-export type ShardMessageSelect = z.infer<typeof messagesSelectSchema>;
-export type ShardMessageInsert = z.infer<typeof messagesInsertSchema>;
+export type ShardMessageSelect = z.infer<typeof shardMessagesSelectSchema>;
+export type ShardMessageInsert = z.infer<typeof shardMessagesInsertSchema>;
