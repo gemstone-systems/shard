@@ -6,6 +6,14 @@ export type DidPlc = z.infer<typeof didPlcSchema>;
 export const didWebSchema = z.templateLiteral(["did:web:", z.string()]);
 export type DidWeb = z.infer<typeof didWebSchema>;
 
+export const didSchema = z.templateLiteral([
+    "did:",
+    z.string(),
+    ":",
+    z.string(),
+]);
+export type Did = z.infer<typeof didSchema>;
+
 export const nsidSchema = z
     .string()
     .regex(

@@ -1,4 +1,6 @@
+import { didSchema } from "@/lib/types/atproto";
 import "dotenv/config";
+import { z } from "zod";
 
 const dbUrl = process.env.DB_URL;
 if (!dbUrl)
@@ -31,3 +33,17 @@ if (!serverPort)
         "Environment variable SERVER_PORT not set. Defaulting to 7337",
     );
 export const SERVER_PORT = Number.parseInt(serverPort ?? "7337");
+
+const serviceDid = process.env.SERVICE_DID;
+const {
+    success: serviceDidSuccess,
+    error: serviceDidError,
+    data: serviceDidValidated,
+} = didSchema.safeParse(serviceDid);
+if (!serviceDidSuccess) {
+    console.warn(serviceDidError);
+    console.warn(
+        "Environment variable SERVICE_DID not set. Defaulting to `did:web:localhost`",
+    );
+}
+export const SERVICE_DID = serviceDidValidated ?? "did:web:localhost";
