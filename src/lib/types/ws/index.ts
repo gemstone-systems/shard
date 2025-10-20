@@ -1,6 +1,6 @@
 import { shardMessagesInsertSchema } from "@/db/schema/messages";
 import { verificationRequestSchema } from "@/lib/types/ws/verify";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 export const WebSocketMessageType = {
     SHARD_VERIFY: "shard/verify",
