@@ -4,7 +4,7 @@ import type { WebSocket } from "ws";
 export type RouteHandler = (
     req: FastifyRequest | undefined,
     reply: FastifyReply | undefined,
-) => Response;
+) => Response | Promise<Response>;
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
