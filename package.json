@@ -1,7 +1,7 @@
 {
-    "name": "dawn-persona",
+    "name": "@gmstn/shard",
     "version": "0.0.1",
-    "description": "persaon lettabot",
+    "description": "message storage server",
     "exports": "./index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
@@ -14,7 +14,7 @@
     },
     "keywords": [],
     "author": "",
-    "license": "ISC",
+    "license": "MIT",
     "packageManager": "pnpm@10.18.0",
     "devDependencies": {
         "@eslint/js": "^9.38.0",
