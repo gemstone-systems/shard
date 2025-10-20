@@ -14,18 +14,31 @@ export const didSchema = z.templateLiteral([
 ]);
 export type Did = z.infer<typeof didSchema>;
 
-export const nsidSchema = z
-    .string()
-    .regex(
-        /^[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(\.[a-zA-Z]([a-zA-Z0-9]{0,62})?)$/,
-    );
-export type NSID = z.infer<typeof nsidSchema>;
+export const nsidSchema = z.custom<`${string}.${string}.${string}`>(
+    (val): val is `${string}.${string}.${string}` => {
+        return (
+            typeof val === "string" &&
+            /^[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(\.[a-zA-Z]([a-zA-Z0-9]{0,62})?)$/.test(
+                val,
+            )
+        );
+    },
+    { message: "Invalid atproto nsid format." },
+);
+export type Nsid = z.infer<typeof nsidSchema>;
 
-export const atprotoHandleSchema = z
-    .string()
-    .regex(
-        /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/,
-    );
+export const atprotoHandleSchema = z.custom<`${string}.${string}`>(
+    (val): val is `${string}.${string}` => {
+        return (
+            typeof val === "string" &&
+            /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/.test(
+                val,
+            )
+        );
+    },
+    { message: "Invalid atproto handle format." },
+);
+export type AtprotoHandle = z.infer<typeof atprotoHandleSchema>;
 
 export const atUriSchema = z.object({
     authority: z.union([didPlcSchema, didWebSchema, atprotoHandleSchema]),
@@ -33,3 +46,28 @@ export const atUriSchema = z.object({
     rKey: z.optional(z.string()),
 });
 export type AtUri = z.infer<typeof atUriSchema>;
+
+export const didDocumentSchema = z.object({
+    id: z.string(),
+    alsoKnownAs: z.optional(z.array(z.string())),
+    verificationMethod: z.optional(
+        z.array(
+            z.object({
+                id: z.string(),
+                type: z.string(),
+                controller: z.string(),
+                publicKeyMultibase: z.string(),
+            }),
+        ),
+    ),
+    service: z.optional(
+        z.array(
+            z.object({
+                id: z.string(),
+                type: z.string(),
+                serviceEndpoint: z.string(),
+            }),
+        ),
+    ),
+});
+export type DidDocument = z.infer<typeof didDocumentSchema>;
