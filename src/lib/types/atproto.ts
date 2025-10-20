@@ -47,19 +47,19 @@ export const atUriSchema = z.object({
 });
 export type AtUri = z.infer<typeof atUriSchema>;
 
+export const verificationMethodSchema = z.object({
+    id: z.string(),
+    type: z.string(),
+    controller: z.string(),
+    publicKeyMultibase: z.string(),
+});
+export type VerificationMethod = z.infer<typeof verificationMethodSchema>;
+
 export const didDocumentSchema = z.object({
+    "@context": z.array(z.string()),
     id: z.string(),
     alsoKnownAs: z.optional(z.array(z.string())),
-    verificationMethod: z.optional(
-        z.array(
-            z.object({
-                id: z.string(),
-                type: z.string(),
-                controller: z.string(),
-                publicKeyMultibase: z.string(),
-            }),
-        ),
-    ),
+    verificationMethod: z.optional(z.array(verificationMethodSchema)),
     service: z.optional(
         z.array(
             z.object({
