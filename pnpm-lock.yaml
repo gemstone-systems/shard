@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@atcute/atproto':
+        specifier: ^3.1.7
+        version: 3.1.7
+      '@atcute/client':
+        specifier: ^4.0.5
+        version: 4.0.5
       '@atcute/identity-resolver':
         specifier: ^1.1.4
         version: 1.1.4(@atcute/identity@1.1.1)
@@ -80,6 +86,12 @@ importers:
         version: 8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
 
 packages:
+
+  '@atcute/atproto@3.1.7':
+    resolution: {integrity: sha512-3Ym8qaVZg2vf8qw0KO1aue39z/5oik5J+UDoSes1vr8ddw40UVLA5sV4bXSKmLnhzQHiLLgoVZXe4zaKfozPoQ==}
+
+  '@atcute/client@4.0.5':
+    resolution: {integrity: sha512-R8Qen8goGmEkynYGg2m6XFlVmz0GTDvQ+9w+4QqOob+XMk8/WDpF4aImev7WKEde/rV2gjcqW7zM8E6W9NShDA==}
 
   '@atcute/crypto@2.2.5':
     resolution: {integrity: sha512-9CbQ9cJ68XewsbLrgdmWQS2uDD9D0hizWFJ3OOZ16TCuARREmzKEpFgHlMxPswR3bDxjwfiXzmYUlHaTqsnxRQ==}
@@ -1527,6 +1539,15 @@ packages:
     resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
 snapshots:
+
+  '@atcute/atproto@3.1.7':
+    dependencies:
+      '@atcute/lexicons': 1.2.2
+
+  '@atcute/client@4.0.5':
+    dependencies:
+      '@atcute/identity': 1.1.1
+      '@atcute/lexicons': 1.2.2
 
   '@atcute/crypto@2.2.5':
     dependencies:
