@@ -24,16 +24,20 @@ const httpResponseBaseSchema = z.object({
     error: z.optional(httpResponseErrorInfoSchema),
 });
 
-export const httpSuccessResponseSchema = httpResponseBaseSchema.safeExtend({
-    status: z.literal(HttpResponseStatusType.SUCCESS),
-    data: httpResponseDataSchema,
-    error: z.undefined(),
-});
+export const httpSuccessResponseSchema = httpResponseBaseSchema
+    .safeExtend({
+        status: z.literal(HttpResponseStatusType.SUCCESS),
+        data: httpResponseDataSchema,
+        error: z.undefined(),
+    })
+    .omit({ error: true });
 export type HttpSuccessResponse = z.infer<typeof httpSuccessResponseSchema>;
 
-export const httpErrorResponseSchema = httpResponseBaseSchema.safeExtend({
-    status: z.literal(HttpResponseStatusType.ERROR),
-    error: httpResponseErrorInfoSchema,
-    data: z.undefined(),
-});
+export const httpErrorResponseSchema = httpResponseBaseSchema
+    .safeExtend({
+        status: z.literal(HttpResponseStatusType.ERROR),
+        error: httpResponseErrorInfoSchema,
+        data: z.undefined(),
+    })
+    .omit({ data: true });
 export type HttpErrorResponse = z.infer<typeof httpErrorResponseSchema>;
