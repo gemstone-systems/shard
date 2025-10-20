@@ -2,7 +2,7 @@ import { SERVICE_DID } from "@/lib/env";
 import type { Did } from "@/lib/types/atproto";
 import { didDocumentSchema, didWebSchema } from "@/lib/types/atproto";
 import type { Route, RouteHandler } from "@/lib/types/routes";
-import { createDidWebDoc } from "@/lib/utils/did";
+import { didDoc as importedDidDoc } from "@/lib/utils/did";
 import { newErrorResponse } from "@/lib/utils/http/responses";
 
 const routeHandlerFactory = (did: Did) => {
@@ -25,12 +25,17 @@ const routeHandlerFactory = (did: Did) => {
         return Response.json(didDocument);
     };
 
-    const { success: isDidWeb, data: didWeb } = didWebSchema.safeParse(did);
+    const { success: isDidWeb } = didWebSchema.safeParse(did);
     if (!isDidWeb) return serveDidPlc;
 
     const serveDidDoc: RouteHandler = () => {
-        const didDoc = createDidWebDoc(didWeb);
-
+        const didDoc = importedDidDoc;
+        if (!didDoc) {
+            return newErrorResponse(500, {
+                message:
+                    "Somehow tried to serve a did:web document when no did:web document was available. Specifically, somehow parsing the same SERVICE_DID environment variable resulted in both a did:web and a not did:web",
+            });
+        }
         return Response.json(didDoc);
     };
 

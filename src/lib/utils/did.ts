@@ -1,7 +1,9 @@
-import type {
-    DidDocument,
-    DidWeb,
-    VerificationMethod,
+import { SERVICE_DID } from "@/lib/env";
+import {
+    didWebSchema,
+    type DidDocument,
+    type DidWeb,
+    type VerificationMethod,
 } from "@/lib/types/atproto";
 import { Secp256k1PrivateKeyExportable } from "@atcute/crypto";
 import { toString as uint8arraysToString } from "uint8arrays";
@@ -16,7 +18,7 @@ export interface CreateDidWebDocResult {
     keys: ServiceKeys;
 }
 
-export const createDidWebDoc = async (
+const buildDidWebDoc = async (
     didWeb: DidWeb,
 ): Promise<CreateDidWebDocResult> => {
     const atprotoKey = await Secp256k1PrivateKeyExportable.createKeypair();
@@ -44,6 +46,7 @@ export const createDidWebDoc = async (
         "@context": [
             "https://www.w3.org/ns/did/v1",
             "https://w3id.org/security/multikey/v1",
+            "https://w3id.org/security/suites/secp256k1-2019/v1",
         ],
         id: didWeb,
         verificationMethod,
@@ -100,3 +103,13 @@ const extractInfoFromDidWeb = (didWeb: DidWeb) => {
         serviceEndpoint: fragments[1] as string | undefined,
     };
 };
+
+const createDidWebDoc = async () => {
+    const did = SERVICE_DID;
+    const { success: isDidWeb, data: didWeb } = didWebSchema.safeParse(did);
+    if (!isDidWeb) return;
+    const { didDoc } = await buildDidWebDoc(didWeb);
+    return didDoc;
+};
+
+export const didDoc = await createDidWebDoc();
