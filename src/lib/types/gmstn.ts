@@ -5,8 +5,8 @@ export const systemsGmstnDevelopmentChannelRecordSchema = z.object({
     $type: z.string(),
     name: z.string(),
     topic: z.string(),
-    storeAt: ComAtprotoRepoStrongRef.mainSchema,
-    routeThrough: ComAtprotoRepoStrongRef.mainSchema,
+    storeAt: z.object({ ...ComAtprotoRepoStrongRef.mainSchema.shape }),
+    routeThrough: z.object({ ...ComAtprotoRepoStrongRef.mainSchema.shape }),
     createdAt: z.coerce.date(),
 });
 export type SystemsGmstnDevelopmentChannel = z.infer<
