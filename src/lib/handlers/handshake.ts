@@ -56,9 +56,9 @@ export const handshakeHandler: RouteHandler = async (req) => {
     // not implemented for now because we support public first
 
     const constellationResponse = await getConstellationBacklink({
-        subject: OWNER_DID,
+        subject: `at://${OWNER_DID}/systems.gmstn.development.shard/${SERVICE_DID.slice(8)}`,
         source: {
-            nsid: "systems.gmstn.development.shard",
+            nsid: "systems.gmstn.development.channel",
             fieldName: "storeAt.uri",
         },
     });
