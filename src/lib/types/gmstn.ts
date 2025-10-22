@@ -1,10 +1,14 @@
-import type { ComAtprotoRepoStrongRef } from "@atcute/atproto";
+import { ComAtprotoRepoStrongRef } from "@atcute/atproto";
+import z from "zod";
 
-export interface SystemsGmstnDevelopmentChannel {
-    name: string;
-    $type: string;
-    topic: string;
-    storeAt: ComAtprotoRepoStrongRef.Main;
-    routeThrough: ComAtprotoRepoStrongRef.Main;
-    createdAt: string;
-}
+export const systemsGmstnDevelopmentChannelRecordSchema = z.object({
+    $type: z.string(),
+    name: z.string(),
+    topic: z.string(),
+    storeAt: ComAtprotoRepoStrongRef.mainSchema,
+    routeThrough: ComAtprotoRepoStrongRef.mainSchema,
+    createdAt: z.coerce.date(),
+});
+export type SystemsGmstnDevelopmentChannel = z.infer<
+    typeof systemsGmstnDevelopmentChannelRecordSchema
+>;
