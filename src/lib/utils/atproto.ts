@@ -40,6 +40,7 @@ export const getRecordFromAtUri = async ({
             service.id === "#atproto_pds" &&
             service.type === "AtprotoPersonalDataServer",
     );
+
     if (!pdsService)
         return {
             ok: false,
@@ -53,14 +54,14 @@ export const getRecordFromAtUri = async ({
     let pdsEndpointUrl;
     try {
         // @ts-expect-error yes, we are coercing something that is explicitly not a string into a string, but in this case we want to be specific. only serviceEndpoints with valid atproto pds URLs should be allowed.
-        pdsEndpointUrl = new URL(pdsEndpointRecord);
+        pdsEndpointUrl = new URL(pdsEndpointRecord).origin;
     } catch (err) {
         return { ok: false, error: err };
     }
-
     const req = new Request(
-        `${pdsEndpointUrl}/xrpc/com.atproto.repo.getRecord?did=${didDocResult.data.id}&collection=${collection}&rkey=${rKey}`,
+        `${pdsEndpointUrl}/xrpc/com.atproto.repo.getRecord?repo=${didDocResult.data.id}&collection=${collection}&rkey=${rKey}`,
     );
+
     const res = await fetch(req);
     const data: unknown = await res.json();
 
@@ -72,7 +73,6 @@ export const getRecordFromAtUri = async ({
     if (!responseParseSuccess) {
         return { ok: false, error: responseParseError };
     }
-
     return { ok: true, data: record.value };
 };
 
