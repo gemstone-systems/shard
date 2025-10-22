@@ -4,6 +4,7 @@ import { didDocumentSchema, didWebSchema } from "@/lib/types/atproto";
 import type { Route, RouteHandler } from "@/lib/types/routes";
 import { didDoc as importedDidDoc } from "@/lib/utils/did";
 import { newErrorResponse } from "@/lib/utils/http/responses";
+import { z } from "zod";
 
 const routeHandlerFactory = (did: Did) => {
     const serveDidPlc: RouteHandler = async () => {
@@ -18,8 +19,8 @@ const routeHandlerFactory = (did: Did) => {
         if (!success)
             return newErrorResponse(500, {
                 message:
-                    "did:plc was not set properly. Either the Shard's did:plc is wrong, or the did:plc was not registered with a public ledger.",
-                details: error,
+                    "Parsing the DID document from a public ledger failed. Either the Shard's did:plc is wrong, the did:plc was not registered with a public ledger, or there is something wrong with the public ledger.",
+                details: z.treeifyError(error),
             });
 
         return Response.json(didDocument);
