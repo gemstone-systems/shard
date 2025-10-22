@@ -78,3 +78,9 @@ if (!ownerDidParseSuccess) {
     throw new Error(z.prettifyError(ownerDidParseError));
 }
 export const OWNER_DID = ownerDidParsed;
+
+const nodeEnv = process.env.NODE_ENV;
+export const NODE_ENV = nodeEnv ?? "development";
+
+export const isDev = NODE_ENV === "development";
+export const __DEV__ = isDev;
