@@ -6,7 +6,14 @@ import type {
 } from "@/lib/types/http/responses";
 import { HttpResponseStatusType } from "@/lib/types/http/responses";
 
-export const newSuccessResponse = (data: HttpResponseData) => {
+export interface ResponseOpts {
+    headers: Record<string, string>;
+}
+
+export const newSuccessResponse = (
+    data: HttpResponseData,
+    options?: ResponseOpts,
+) => {
     const body: HttpSuccessResponse = {
         status: HttpResponseStatusType.SUCCESS,
         data,
@@ -15,6 +22,7 @@ export const newSuccessResponse = (data: HttpResponseData) => {
         status: 200,
         headers: {
             "Content-Type": "application/json",
+            ...options?.headers,
         },
     });
 };
@@ -22,6 +30,7 @@ export const newSuccessResponse = (data: HttpResponseData) => {
 export const newErrorResponse = (
     httpCode: number,
     errorObj: HttpResponseErrorInfo,
+    options?: ResponseOpts,
 ) => {
     const body: HttpErrorResponse = {
         status: HttpResponseStatusType.ERROR,
@@ -31,6 +40,7 @@ export const newErrorResponse = (
         status: httpCode,
         headers: {
             "Content-Type": "application/json",
+            ...options?.headers,
         },
     });
 };
