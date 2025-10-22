@@ -72,7 +72,9 @@ if (!ownerDidParseSuccess) {
     console.error(
         "Could not parse OWNER_DID environment variable. Ensure that it is set and that it is a valid ATProto DID.",
     );
-    console.error("See the example environment variables file for more information. `.example.env` in the project root.")
+    console.error(
+        "See the example environment variables file for more information. `.example.env` in the project root.",
+    );
     throw new Error(z.prettifyError(ownerDidParseError));
 }
 export const OWNER_DID = ownerDidParsed;
