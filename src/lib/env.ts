@@ -1,5 +1,6 @@
 import { didSchema } from "@/lib/types/atproto";
 import "dotenv/config";
+import { z } from "zod";
 
 const dbUrl = process.env.DB_URL;
 if (!dbUrl)
@@ -46,3 +47,32 @@ if (!serviceDidParseSuccess) {
     );
 }
 export const SERVICE_DID = serviceDidParsed ?? "did:web:localhost";
+
+const constellationUrl = process.env.CONSTELLATION_URL;
+let constellationUrlParsed: URL;
+try {
+    constellationUrlParsed = new URL(constellationUrl ?? "");
+} catch (err) {
+    console.error(
+        "Invalid CONSTELLATION_URL. Please ensure that the environment variable is a valid URL.",
+    );
+    console.error("https://developer.mozilla.org/en-US/docs/Web/API/URL/URL");
+    // @ts-expect-error we're throwing it anyway so it doesn't really matter what we provide to the error constructor here. it should be a TypeError.
+    throw new Error(err);
+}
+export const CONSTELLATION_URL = constellationUrlParsed;
+
+const ownerDid = process.env.OWNER_DID;
+const {
+    success: ownerDidParseSuccess,
+    error: ownerDidParseError,
+    data: ownerDidParsed,
+} = didSchema.safeParse(ownerDid);
+if (!ownerDidParseSuccess) {
+    console.error(
+        "Could not parse OWNER_DID environment variable. Ensure that it is set and that it is a valid ATProto DID.",
+    );
+    console.error("See the example environment variables file for more information. `.example.env` in the project root.")
+    throw new Error(z.prettifyError(ownerDidParseError));
+}
+export const OWNER_DID = ownerDidParsed;
