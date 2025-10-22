@@ -17,7 +17,7 @@ import {
     WellKnownHandleResolver,
 } from "@atcute/identity-resolver";
 
-export const resolveRecordFromAtUri = async ({
+export const getRecordFromAtUri = async ({
     authority,
     collection,
     rKey,
