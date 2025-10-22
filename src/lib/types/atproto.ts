@@ -40,8 +40,15 @@ export const atprotoHandleSchema = z.custom<`${string}.${string}`>(
 );
 export type AtprotoHandle = z.infer<typeof atprotoHandleSchema>;
 
+export const atUriAuthoritySchema = z.union([
+    didPlcSchema,
+    didWebSchema,
+    atprotoHandleSchema,
+]);
+export type AtUriAuthority = z.infer<typeof atUriAuthoritySchema>;
+
 export const atUriSchema = z.object({
-    authority: z.union([didPlcSchema, didWebSchema, atprotoHandleSchema]),
+    authority: atUriAuthoritySchema,
     collection: z.optional(nsidSchema),
     rKey: z.optional(z.string()),
 });
