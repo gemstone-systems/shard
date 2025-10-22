@@ -11,7 +11,7 @@ export type ConstellationBacklink = z.infer<typeof constellationBacklinkSchema>;
 export const constellationBacklinkResponseSchema = z.object({
     total: z.number(),
     records: z.array(constellationBacklinkSchema),
-    cursor: z.optional(z.string()),
+    cursor: z.optional(z.string().nullish()),
 });
 export type ConstellationBacklinkResponse = z.infer<
     typeof constellationBacklinkResponseSchema
