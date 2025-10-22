@@ -1,5 +1,7 @@
 import {
     atprotoHandleSchema,
+    atUriAuthoritySchema,
+    nsidSchema,
     type AtprotoHandle,
     type AtUri,
     type Did,
@@ -16,6 +18,7 @@ import {
     WebDidDocumentResolver,
     WellKnownHandleResolver,
 } from "@atcute/identity-resolver";
+import z from "zod";
 
 export const getRecordFromAtUri = async ({
     authority,
@@ -112,4 +115,63 @@ export const resolveDidDoc = async (
     } catch (err) {
         return { ok: false, error: err };
     }
+};
+
+// thank u julie
+export const atUriRegexp =
+    /^at:\/\/([a-zA-Z0-9._:%-]+)(?:\/([a-zA-Z0-9-.]+)(?:\/([a-zA-Z0-9._~:@!$&%')(*+,;=-]+))?)?(?:#(\/[a-zA-Z0-9._~:@!$&%')(*+,;=\-[\]/\\]*))?$/;
+
+export const stringToAtUri = (str: string): Result<AtUri, unknown> => {
+    const isValidAtUri = atUriRegexp.test(str);
+    if (!isValidAtUri)
+        return {
+            ok: false,
+            error: { message: "Input string was not a valid at:// URI" },
+        };
+
+    const fragments = str.split("/");
+    if (fragments.length <= 2)
+        return {
+            ok: false,
+            error: { message: "Input string was not a valid at:// URI." },
+        };
+
+    const {
+        success: authorityParseSuccess,
+        error: authorityParseError,
+        data: authorityParsed,
+    } = atUriAuthoritySchema.safeParse(fragments[1]);
+    if (!authorityParseSuccess)
+        return {
+            ok: false,
+            error: {
+                message:
+                    "Input at:// URI was a valid shape, but somehow could not parse the first fragment as a valid authority.",
+                details: z.treeifyError(authorityParseError),
+            },
+        };
+
+    const {
+        success: nsidParseSuccess,
+        error: nsidParseError,
+        data: nsidParsed,
+    } = nsidSchema.safeParse(fragments[2]);
+    if (fragments[2] && !nsidParseSuccess)
+        return {
+            ok: false,
+            error: {
+                message:
+                    "Input at:// URI was a valid shape and had a second fragment, but was somehow not a valid NSID.",
+                details: z.treeifyError(nsidParseError),
+            },
+        };
+
+    return {
+        ok: true,
+        data: {
+            authority: authorityParsed,
+            collection: nsidParsed,
+            rKey: fragments[3],
+        },
+    };
 };
