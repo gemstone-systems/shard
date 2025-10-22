@@ -1,8 +1,9 @@
+import { didSchema, nsidSchema } from "@/lib/types/atproto";
 import { z } from "zod";
 
 export const constellationBacklinkSchema = z.object({
-    did: z.string(),
-    collection: z.string(),
+    did: didSchema,
+    collection: nsidSchema,
     rkey: z.string(),
 });
 export type ConstellationBacklink = z.infer<typeof constellationBacklinkSchema>;
