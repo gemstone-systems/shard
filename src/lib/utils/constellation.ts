@@ -27,7 +27,7 @@ export const getConstellationBacklink = async ({
     const { nsid, fieldName } = source;
     const sourceParam = fieldName ? `${nsid}:${fieldName}` : nsid;
     const req = new Request(
-        `${CONSTELLATION_URL}/xrpc/blue.microcosm.links.getBacklinks?subject=${encodeURIComponent(subject)}?source=${encodeURIComponent(sourceParam)}`,
+        `${CONSTELLATION_URL}xrpc/blue.microcosm.links.getBacklinks?subject=${encodeURIComponent(subject)}&source=${encodeURIComponent(sourceParam)}`,
     );
     const res = await fetch(req);
 
