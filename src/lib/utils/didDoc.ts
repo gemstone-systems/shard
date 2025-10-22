@@ -1,4 +1,4 @@
-import { SERVICE_DID } from "@/lib/env";
+import { __DEV__, SERVER_PORT, SERVICE_DID } from "@/lib/env";
 import {
     didWebSchema,
     type DidDocument,
@@ -105,7 +105,10 @@ const extractInfoFromDidWeb = (didWeb: DidWeb) => {
 };
 
 const createDidWebDoc = async () => {
-    const did = SERVICE_DID;
+    let did = SERVICE_DID;
+    if (__DEV__) {
+        did = `${did}%3A${SERVER_PORT.toString()}`;
+    }
     const { success: isDidWeb, data: didWeb } = didWebSchema.safeParse(did);
     if (!isDidWeb) return;
     const { didDoc } = await buildDidWebDoc(didWeb);
