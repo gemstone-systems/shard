@@ -51,7 +51,7 @@ export const verificationMethodSchema = z.object({
     id: z.string(),
     type: z.string(),
     controller: z.string(),
-    publicKeyMultibase: z.string(),
+    publicKeyMultibase: z.optional(z.string()),
 });
 export type VerificationMethod = z.infer<typeof verificationMethodSchema>;
 
@@ -64,8 +64,14 @@ export const didDocumentSchema = z.object({
         z.array(
             z.object({
                 id: z.string(),
-                type: z.string(),
-                serviceEndpoint: z.string(),
+                type: z.union([z.string(), z.array(z.string())]),
+                serviceEndpoint: z.union([
+                    z.string(),
+                    z.record(z.string(), z.string()),
+                    z.array(
+                        z.union([z.string(), z.record(z.string(), z.string())]),
+                    ),
+                ]),
             }),
         ),
     ),
