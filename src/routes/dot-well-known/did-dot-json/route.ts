@@ -2,7 +2,7 @@ import { SERVICE_DID } from "@/lib/env";
 import type { Did } from "@/lib/types/atproto";
 import { didDocumentSchema, didWebSchema } from "@/lib/types/atproto";
 import type { Route, RouteHandler } from "@/lib/types/routes";
-import { didDoc as importedDidDoc } from "@/lib/utils/did";
+import { didDoc as importedDidDoc } from "@/lib/utils/didDoc";
 import { newErrorResponse } from "@/lib/utils/http/responses";
 import { z } from "zod";
 
