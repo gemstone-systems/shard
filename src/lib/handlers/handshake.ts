@@ -132,7 +132,6 @@ export const handshakeHandler: RouteHandler = async (req) => {
 
         const { storeAt: storeAtRecord, routeThrough: routeThroughRecord } =
             channel;
-        // @ts-expect-error atcute's schema shape gives an unknown when it should give string. will probably swap to a different library eventually.
         const storeAtRecordParseResult = stringToAtUri(storeAtRecord.uri);
         if (!storeAtRecordParseResult.ok) {
             mismatchOrIncorrect = true;
@@ -152,7 +151,6 @@ export const handshakeHandler: RouteHandler = async (req) => {
         }
 
         const routeThroughRecordParseResult = stringToAtUri(
-            // @ts-expect-error atcute's schema shape gives an unknown when it should give string. will probably swap to a different library eventually.
             routeThroughRecord.uri,
         );
         if (!routeThroughRecordParseResult.ok) {
