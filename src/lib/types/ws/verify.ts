@@ -1,5 +1,5 @@
 import { atUriSchema } from "@/lib/types/atproto";
-import z from "zod/v4";
+import { z } from "zod";
 
 export const verificationRequestSchema = z.object({
     interServiceJwt: z.unknown(),

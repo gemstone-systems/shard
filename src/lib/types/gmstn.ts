@@ -1,5 +1,5 @@
 import { comAtprotoRepoStrongRefSchema } from "@/lib/types/atproto";
-import z from "zod";
+import { z } from "zod";
 
 export const systemsGmstnDevelopmentChannelRecordSchema = z.object({
     $type: z.string(),

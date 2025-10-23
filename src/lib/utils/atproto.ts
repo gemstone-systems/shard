@@ -18,7 +18,7 @@ import {
     WebDidDocumentResolver,
     WellKnownHandleResolver,
 } from "@atcute/identity-resolver";
-import z from "zod";
+import { z } from "zod";
 
 export const getRecordFromAtUri = async ({
     authority,

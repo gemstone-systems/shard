@@ -1,7 +1,7 @@
 import type { WebSocket } from "ws";
 import * as crypto from "node:crypto";
 import { SESSIONS_SECRET } from "@/lib/utils/crypto";
-import z from "zod";
+import { z } from "zod";
 
 export const sessionInfoSchema = z.object({
     id: z.string(),
