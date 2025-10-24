@@ -9,7 +9,7 @@ export const connectPreHandler: PreHandler = (req, reply, done) => {
     const { query } = req;
     if (!query) return;
     if (!(typeof query === "object" && "token" in query)) {
-        reply.code(400).send("provide token in query params");
+        reply.code(400).send("Provide token in query params");
         return;
     }
 
@@ -17,16 +17,29 @@ export const connectPreHandler: PreHandler = (req, reply, done) => {
 
     const sessionInfo = issuedHandshakes.get(sessionToken);
     if (!sessionInfo) {
-        reply.code(404).send("session token could not resolve to existing session. retry?");
+        reply
+            .code(404)
+            .send(
+                "Session token could not resolve to existing session. retry?",
+            );
         return;
     }
 
     if (!isValidSession(sessionInfo)) {
-        reply.code(403).send("session token resolved to session, but did not pass verification. this should not happen.");
+        reply
+            .code(403)
+            .send(
+                "Session token resolved to session, but did not pass verification. this should not happen.",
+            );
         return;
     }
 
-
+    console.log(
+        "Found session:",
+        sessionInfo.id,
+        "from session token",
+        sessionToken,
+    );
     done();
 };
 
