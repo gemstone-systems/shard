@@ -16,12 +16,15 @@ const main = async () => {
                 handler,
             });
         } else {
-            const { wsHandler, method, handler } = route;
-            server.route({
-                url,
-                method: method ?? "GET",
-                handler: handler ?? (() => new Response()),
-                wsHandler,
+            const { wsHandler, method, handler, preHandler } = route;
+            server.register(() => {
+                server.route({
+                    url,
+                    method: method ?? "GET",
+                    handler: handler ?? (() => new Response()),
+                    wsHandler,
+                    preHandler,
+                });
             });
         }
     }
