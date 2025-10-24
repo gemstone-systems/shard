@@ -3,11 +3,14 @@ import * as crypto from "node:crypto";
 import { SESSIONS_SECRET } from "@/lib/utils/crypto";
 import { z } from "zod";
 import type { Result } from "@/lib/utils/result";
+import type { AtUri } from "@/lib/types/atproto";
+import { atUriSchema } from "@/lib/types/atproto";
 
 export const sessionInfoSchema = z.object({
     id: z.string(),
     token: z.string(),
     fingerprint: z.string(),
+    allowedChannels: z.array(atUriSchema),
 });
 export type SessionInfo = z.infer<typeof sessionInfoSchema>;
 
@@ -15,14 +18,17 @@ export const generateSessionId = () => {
     return crypto.randomUUID();
 };
 
-export const generateSessionInfo = (sessionId: string): SessionInfo => {
+export const generateSessionInfo = (
+    sessionId: string,
+    allowedChannels: Array<AtUri>,
+): SessionInfo => {
     const token = crypto.randomBytes(32).toString("base64url");
 
     const hmac = crypto.createHmac("sha256", SESSIONS_SECRET);
     hmac.update(`${token}:${sessionId}`);
     const fingerprint = hmac.digest("hex");
 
-    return { id: sessionId, token, fingerprint };
+    return { id: sessionId, token, fingerprint, allowedChannels };
 };
 
 export const verifyHandshakeToken = ({
@@ -46,9 +52,14 @@ export const verifyHandshakeToken = ({
 
 export const issuedHandshakes = new Map<string, SessionInfo>();
 
-export const issueNewHandshakeToken = () => {
+export const issueNewHandshakeToken = (
+    allowedChannels: Array<AtUri | undefined>,
+) => {
+    const filteredChannels = allowedChannels.filter(
+        (channels) => channels !== undefined,
+    );
     const sessionId = generateSessionId();
-    const sessionInfo = generateSessionInfo(sessionId);
+    const sessionInfo = generateSessionInfo(sessionId, filteredChannels);
     issuedHandshakes.set(sessionInfo.id, sessionInfo);
     return sessionInfo;
 };

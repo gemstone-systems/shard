@@ -29,7 +29,13 @@ export const handshakeHandler: RouteHandler = async (req) => {
         });
     }
 
-    const { interServiceJwt } = handshakeData;
+    const { interServiceJwt, channelAtUris: channelAtUriStrings } =
+        handshakeData;
+    const allowedChannels = channelAtUriStrings.map((channel) => {
+        const res = stringToAtUri(channel);
+        if (!res.ok) return;
+        return res.data;
+    });
 
     const verifyJwtResult = await verifyServiceJwt(interServiceJwt);
     if (!verifyJwtResult.ok) {
@@ -176,7 +182,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
 
     // yipee, it's a valid request :3
 
-    const sessionInfo = issueNewHandshakeToken();
+    const sessionInfo = issueNewHandshakeToken(allowedChannels);
 
     return newSuccessResponse({ sessionInfo });
 };
