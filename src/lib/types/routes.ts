@@ -14,10 +14,7 @@ export interface Route {
     wsHandler?: undefined;
 }
 
-export type WsRouteHandler = (
-    socket: WebSocket,
-    req: FastifyRequest | undefined,
-) => void;
+export type WsRouteHandler = (socket: WebSocket, req: FastifyRequest) => void;
 
 export interface WsRoute {
     method?: Method;
