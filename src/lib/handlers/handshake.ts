@@ -167,8 +167,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
         }
     });
 
-    // we are mutating this above @typescript-eslint/no-unnecessary-condition
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (mismatchOrIncorrect)
         return newErrorResponse(400, {
             message:
