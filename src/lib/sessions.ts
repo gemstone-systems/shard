@@ -55,23 +55,27 @@ export const issueNewHandshakeToken = () => {
 
 export const activeSessions = new Map<string, WebSocket>();
 
+export const isValidSession = (sessionInfo: SessionInfo) => {
+    return (
+        issuedHandshakes.has(sessionInfo.id) &&
+        verifyHandshakeToken(sessionInfo)
+    );
+};
+
 export const createNewSession = ({
     sessionInfo,
     socket,
 }: {
     sessionInfo: SessionInfo;
     socket: WebSocket;
-}): Result<undefined, undefined> => {
-    const isValidSession = verifyHandshakeToken(sessionInfo);
-    if (!isValidSession) return { ok: false };
-
+}): Result<{ sessionSocket: WebSocket }, undefined> => {
     try {
         issuedHandshakes.delete(sessionInfo.id);
     } catch {
         return { ok: false };
     }
     activeSessions.set(sessionInfo.id, socket);
-    return { ok: true };
+    return { ok: true, data: { sessionSocket: socket } };
 };
 
 export const deleteSession = (
