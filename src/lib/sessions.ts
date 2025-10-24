@@ -60,7 +60,7 @@ export const issueNewHandshakeToken = (
     );
     const sessionId = generateSessionId();
     const sessionInfo = generateSessionInfo(sessionId, filteredChannels);
-    issuedHandshakes.set(sessionInfo.id, sessionInfo);
+    issuedHandshakes.set(sessionInfo.token, sessionInfo);
     return sessionInfo;
 };
 
@@ -68,7 +68,7 @@ export const activeSessions = new Map<string, WebSocket>();
 
 export const isValidSession = (sessionInfo: SessionInfo) => {
     return (
-        issuedHandshakes.has(sessionInfo.id) &&
+        issuedHandshakes.has(sessionInfo.token) &&
         verifyHandshakeToken(sessionInfo)
     );
 };
@@ -81,7 +81,7 @@ export const createNewSession = ({
     socket: WebSocket;
 }): Result<{ sessionSocket: WebSocket }, undefined> => {
     try {
-        issuedHandshakes.delete(sessionInfo.id);
+        issuedHandshakes.delete(sessionInfo.token);
     } catch {
         return { ok: false };
     }
