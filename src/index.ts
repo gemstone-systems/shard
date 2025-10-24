@@ -1,5 +1,10 @@
 import { setupDbWithMigrations } from "@/db";
 import { DB_URL, SERVER_PORT } from "@/lib/env";
+import { newErrorResponse } from "@/lib/utils/http/responses";
+import {
+    wrapHttpRegistrationCheck,
+    wrapWsRegistrationCheck,
+} from "@/lib/utils/registration";
 import { routes } from "@/routes";
 import { setupServer } from "@/server";
 
@@ -9,20 +14,42 @@ const main = async () => {
     const server = await setupServer();
     for (const [url, route] of Object.entries(routes)) {
         if (!route.wsHandler) {
-            const { handler, method } = route;
+            const { handler, method, skipRegistrationCheck } = route;
             server.route({
                 url,
                 method,
-                handler,
+                handler: skipRegistrationCheck
+                    ? handler
+                    : wrapHttpRegistrationCheck(handler),
             });
         } else {
-            const { wsHandler, method, handler, preHandler } = route;
+            const {
+                wsHandler,
+                method,
+                handler: httpHandler,
+                preHandler,
+                skipRegistrationCheckHttp,
+                skipRegistrationCheckWs,
+            } = route;
+
+            const handler =
+                httpHandler ??
+                (() =>
+                    newErrorResponse(404, {
+                        message:
+                            "This is a websocket only route. Did you mean to initiate a websocket connection here?",
+                    }));
+
             server.register(() => {
                 server.route({
                     url,
                     method: method ?? "GET",
-                    handler: handler ?? (() => new Response()),
-                    wsHandler,
+                    handler: skipRegistrationCheckHttp
+                        ? handler
+                        : wrapHttpRegistrationCheck(handler),
+                    wsHandler: skipRegistrationCheckWs
+                        ? wsHandler
+                        : wrapWsRegistrationCheck(wsHandler),
                     preHandler,
                 });
             });
