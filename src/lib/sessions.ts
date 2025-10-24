@@ -2,6 +2,7 @@ import type { WebSocket } from "ws";
 import * as crypto from "node:crypto";
 import { SESSIONS_SECRET } from "@/lib/utils/crypto";
 import { z } from "zod";
+import type { Result } from "@/lib/utils/result";
 
 export const sessionInfoSchema = z.object({
     id: z.string(),
@@ -9,10 +10,6 @@ export const sessionInfoSchema = z.object({
     fingerprint: z.string(),
 });
 export type SessionInfo = z.infer<typeof sessionInfoSchema>;
-
-export type Session = Map<string, WebSocket>;
-
-export const sessions: Session = new Map<string, WebSocket>();
 
 export const generateSessionId = () => {
     return crypto.randomUUID();
@@ -28,7 +25,7 @@ export const generateSessionInfo = (sessionId: string): SessionInfo => {
     return { id: sessionId, token, fingerprint };
 };
 
-export const verifySessionToken = ({
+export const verifyHandshakeToken = ({
     token,
     fingerprint,
     id: sessionId,
@@ -47,43 +44,43 @@ export const verifySessionToken = ({
     }
 };
 
-export const assignSessionTo = ({
+export const issuedHandshakes = new Set<SessionInfo>();
+
+export const issueNewHandshakeToken = () => {
+    const sessionId = generateSessionId();
+    const sessionInfo = generateSessionInfo(sessionId);
+    issuedHandshakes.add(sessionInfo);
+};
+
+export const activeSessions = new Map<string, WebSocket>();
+
+export const createNewSession = ({
     sessionInfo,
     socket,
 }: {
     sessionInfo: SessionInfo;
     socket: WebSocket;
-}) => {
+}): Result<undefined, undefined> => {
+    const isValidSession = verifyHandshakeToken(sessionInfo);
+    if (!isValidSession) return { ok: false };
+
     try {
-        const sessionId = sessionInfo.id;
-        sessions.set(sessionId, socket);
-        return { ok: true };
-    } catch (err: unknown) {
-        return { ok: false, err };
+        issuedHandshakes.delete(sessionInfo);
+    } catch {
+        return { ok: false };
     }
+    activeSessions.set(sessionInfo.id, socket);
+    return { ok: true };
 };
 
-export const dropSession = (sessionId: string) => {
+export const deleteSession = (
+    sessionInfo: SessionInfo,
+): Result<undefined, undefined> => {
+    if (!activeSessions.has(sessionInfo.id)) return { ok: false };
     try {
-        if (!sessions.has(sessionId))
-            return {
-                ok: false,
-                err: new Error(
-                    `Could not find a session socket for id ${sessionId} `,
-                ),
-            };
-        const session = sessions.get(sessionId);
-        if (!session)
-            return {
-                ok: false,
-                err: new Error(
-                    "`sessionId` key exists, but could not get the session socket for some reason?",
-                ),
-            };
-        session.close();
-        sessions.delete(sessionId);
-        return { ok: true };
-    } catch (err: unknown) {
-        return { ok: false, err };
+        activeSessions.delete(sessionInfo.id);
+    } catch {
+        return { ok: false };
     }
+    return { ok: true };
 };
