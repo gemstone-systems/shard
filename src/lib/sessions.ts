@@ -44,12 +44,12 @@ export const verifyHandshakeToken = ({
     }
 };
 
-export const issuedHandshakes = new Set<SessionInfo>();
+export const issuedHandshakes = new Map<string, SessionInfo>();
 
 export const issueNewHandshakeToken = () => {
     const sessionId = generateSessionId();
     const sessionInfo = generateSessionInfo(sessionId);
-    issuedHandshakes.add(sessionInfo);
+    issuedHandshakes.set(sessionInfo.id, sessionInfo);
 };
 
 export const activeSessions = new Map<string, WebSocket>();
@@ -65,7 +65,7 @@ export const createNewSession = ({
     if (!isValidSession) return { ok: false };
 
     try {
-        issuedHandshakes.delete(sessionInfo);
+        issuedHandshakes.delete(sessionInfo.id);
     } catch {
         return { ok: false };
     }
