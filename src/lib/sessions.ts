@@ -50,6 +50,7 @@ export const issueNewHandshakeToken = () => {
     const sessionId = generateSessionId();
     const sessionInfo = generateSessionInfo(sessionId);
     issuedHandshakes.set(sessionInfo.id, sessionInfo);
+    return sessionInfo;
 };
 
 export const activeSessions = new Map<string, WebSocket>();

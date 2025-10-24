@@ -1,5 +1,5 @@
 import { OWNER_DID, SERVICE_DID } from "@/lib/env";
-import { generateSessionId, generateSessionInfo } from "@/lib/sessions";
+import { issueNewHandshakeToken } from "@/lib/sessions";
 import { systemsGmstnDevelopmentChannelRecordSchema } from "@/lib/types/gmstn";
 import { HttpGeneralErrorType } from "@/lib/types/http/errors";
 import { handshakeDataSchema } from "@/lib/types/http/handlers";
@@ -176,8 +176,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
 
     // yipee, it's a valid request :3
 
-    const sessionId = generateSessionId();
-    const sessionInfo = generateSessionInfo(sessionId);
+    const sessionInfo = issueNewHandshakeToken();
 
     return newSuccessResponse({ sessionInfo });
 };
