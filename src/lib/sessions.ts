@@ -3,14 +3,17 @@ import * as crypto from "node:crypto";
 import { SESSIONS_SECRET } from "@/lib/utils/crypto";
 import { z } from "zod";
 import type { Result } from "@/lib/utils/result";
-import type { AtUri } from "@/lib/types/atproto";
-import { atUriSchema } from "@/lib/types/atproto";
+import type { AtUri, Did } from "@/lib/types/atproto";
+import { atUriSchema, didSchema } from "@/lib/types/atproto";
+import { SERVICE_DID } from "@/lib/env";
 
 export const sessionInfoSchema = z.object({
     id: z.string(),
     token: z.string(),
     fingerprint: z.string(),
     allowedChannels: z.array(atUriSchema),
+    shardDid: didSchema,
+    latticeDid: didSchema,
 });
 export type SessionInfo = z.infer<typeof sessionInfoSchema>;
 
@@ -21,6 +24,7 @@ export const generateSessionId = () => {
 export const generateSessionInfo = (
     sessionId: string,
     allowedChannels: Array<AtUri>,
+    latticeDid: Did,
 ): SessionInfo => {
     const token = crypto.randomBytes(32).toString("base64url");
 
@@ -28,7 +32,16 @@ export const generateSessionInfo = (
     hmac.update(`${token}:${sessionId}`);
     const fingerprint = hmac.digest("hex");
 
-    return { id: sessionId, token, fingerprint, allowedChannels };
+    const shardDid = SERVICE_DID;
+
+    return {
+        id: sessionId,
+        token,
+        fingerprint,
+        allowedChannels,
+        latticeDid,
+        shardDid,
+    };
 };
 
 export const verifyHandshakeToken = ({
@@ -52,14 +65,22 @@ export const verifyHandshakeToken = ({
 
 export const issuedHandshakes = new Map<string, SessionInfo>();
 
-export const issueNewHandshakeToken = (
-    allowedChannels: Array<AtUri | undefined>,
-) => {
+export const issueNewHandshakeToken = ({
+    allowedChannels,
+    latticeDid,
+}: {
+    allowedChannels: Array<AtUri | undefined>;
+    latticeDid: Did;
+}) => {
     const filteredChannels = allowedChannels.filter(
         (channels) => channels !== undefined,
     );
     const sessionId = generateSessionId();
-    const sessionInfo = generateSessionInfo(sessionId, filteredChannels);
+    const sessionInfo = generateSessionInfo(
+        sessionId,
+        filteredChannels,
+        latticeDid,
+    );
     issuedHandshakes.set(sessionInfo.token, sessionInfo);
     return sessionInfo;
 };

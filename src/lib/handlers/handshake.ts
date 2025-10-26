@@ -182,7 +182,10 @@ export const handshakeHandler: RouteHandler = async (req) => {
 
     // yipee, it's a valid request :3
 
-    const sessionInfo = issueNewHandshakeToken(allowedChannels);
+    const sessionInfo = issueNewHandshakeToken({
+        allowedChannels,
+        latticeDid: verifyJwtResult.value.issuer,
+    });
 
     return newSuccessResponse({ sessionInfo });
 };
