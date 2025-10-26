@@ -81,6 +81,7 @@ export const issueNewHandshakeToken = ({
         filteredChannels,
         latticeDid,
     );
+    console.log("Issuing new handshake token with session info", sessionInfo);
     issuedHandshakes.set(sessionInfo.token, sessionInfo);
     return sessionInfo;
 };
