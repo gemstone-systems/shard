@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { Result } from "@/lib/utils/result";
 import type { AtUri, Did } from "@/lib/types/atproto";
 import { atUriSchema, didSchema } from "@/lib/types/atproto";
-import { SERVICE_DID } from "@/lib/env";
+import { SERVER_PORT, SERVICE_DID } from "@/lib/env";
 
 export const sessionInfoSchema = z.object({
     id: z.string(),
@@ -32,7 +32,9 @@ export const generateSessionInfo = (
     hmac.update(`${token}:${sessionId}`);
     const fingerprint = hmac.digest("hex");
 
-    const shardDid = SERVICE_DID;
+    const shardDid: Did = SERVICE_DID.includes("localhost")
+        ? `${SERVICE_DID}%3A${SERVER_PORT.toString()}`
+        : SERVICE_DID;
 
     return {
         id: sessionId,
