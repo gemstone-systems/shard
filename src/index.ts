@@ -1,7 +1,12 @@
 import { setupDbWithMigrations } from "@/db";
-import { DB_URL, SERVER_PORT } from "@/lib/env";
+import { DB_URL, OWNER_DID, SERVER_PORT, SERVICE_DID } from "@/lib/env";
+import { setRegistrationState } from "@/lib/state";
+import type { AtUri } from "@/lib/types/atproto";
+import { getRecordFromAtUri } from "@/lib/utils/atproto";
 import { newErrorResponse } from "@/lib/utils/http/responses";
+import { connectToPrism } from "@/lib/utils/prism";
 import {
+    attachShardRegistrationListener,
     wrapHttpRegistrationCheck,
     wrapWsRegistrationCheck,
 } from "@/lib/utils/registration";
@@ -60,6 +65,40 @@ const main = async () => {
         server.log.error(err);
         process.exit(1);
     });
+
+    let shardUrlOrigin = decodeURIComponent(
+        SERVICE_DID.startsWith("did:web:") ? SERVICE_DID.slice(8) : "",
+    );
+    if (shardUrlOrigin === "localhost")
+        shardUrlOrigin += `:${SERVER_PORT.toString()}`;
+    if (shardUrlOrigin === "") {
+        // TODO: resolve did:plc endpoint to get the origin of the shard endpoint described by the did:plc doc
+        // for now we just throw.
+        throw new Error(
+            "did:plc support not yet implemented. Provide a did:web for now. did:plc support will come in the future.",
+        );
+    }
+
+    const shardAtUri: Required<AtUri> = {
+        // @ts-expect-error alas, template literal weirdness continues uwu
+        authority: OWNER_DID,
+        collection: "systems.gmstn.development.shard",
+        rKey: shardUrlOrigin,
+    };
+
+    const shardRecord = await getRecordFromAtUri(shardAtUri);
+
+    if (shardRecord.ok) {
+        setRegistrationState(true);
+    }
+
+    const prismWebsocket = connectToPrism({
+        wantedCollections: ["systems.gmstn.development.*"],
+    });
+
+    // TODO: probably move this to an `attachListeners` hook that attaches the listeners we want.
+    // least tested. will probably have nuances we need to work on in the future
+    attachShardRegistrationListener(prismWebsocket);
 };
 
 main()

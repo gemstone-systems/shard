@@ -15,7 +15,7 @@ export const wrapHttpRegistrationCheck = (
         if (!registrationState.registered) {
             return newErrorResponse(503, {
                 message:
-                    "Lattice has not been registered for use. Register it in the dashboard or make the record yourself using the bootstrapper if you're doing local development.",
+                    "Shard has not been registered for use. Register it in the dashboard or make the record yourself using the bootstrapper if you're doing local development.",
             });
         }
 
@@ -31,10 +31,7 @@ export function wrapWsRegistrationCheck(
     const registrationState = getRegistrationState();
     const wrappedFunction: WsRouteHandler = (socket, request) => {
         if (!registrationState.registered) {
-            socket.close(
-                1013,
-                "Service unavailable: Lattice not yet registered",
-            );
+            socket.close(1013, "Service unavailable: Shard not yet registered");
             return;
         }
 
@@ -44,7 +41,7 @@ export function wrapWsRegistrationCheck(
     return wrappedFunction;
 }
 
-export const attachLatticeRegistrationListener = (socket: WebSocket) => {
+export const attachShardRegistrationListener = (socket: WebSocket) => {
     socket.on("message", (rawData: RawData) => {
         const data = rawDataToString(rawData);
         const jsonData: unknown = JSON.parse(data);
@@ -61,10 +58,10 @@ export const attachLatticeRegistrationListener = (socket: WebSocket) => {
         // TODO: replace empty string with call to resolve did doc and the endpoint and yadda yadda etc. etc. you get it.
         // if you don't, then the tl;dr is you need to resolve the did:plc document to get the service endpoint describing this lattice and ensure
         // that the domain/origin/whatever matches with the rkey (or record value if we decide to transition to that)
-        const latticeDomain = SERVICE_DID.startsWith("did:web:")
+        const shardDomain = SERVICE_DID.startsWith("did:web:")
             ? SERVICE_DID.slice(8)
             : "";
-        if (rkey !== latticeDomain) return;
+        if (rkey !== shardDomain) return;
 
         setRegistrationState(true);
     });
