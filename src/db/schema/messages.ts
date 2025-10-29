@@ -15,6 +15,7 @@ export const messagesTable = sqliteTable(
         channelAtUri: text("channel_at_uri"),
         authorDid: text("author_did").notNull(),
         content: text("content").notNull(),
+        sentAt: integer("created_at", { mode: "timestamp" }).notNull(),
         createdAt: integer("created_at", { mode: "timestamp" })
             .notNull()
             .default(sql`(unixepoch('now'))`),
