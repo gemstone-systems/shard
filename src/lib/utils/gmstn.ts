@@ -20,8 +20,6 @@ export const storeMessageInDb = async (message: ShardMessage) => {
         createdAt: new Date(),
     };
 
-    console.log("sentAt", sentAt.getTime());
-
     const insertResult = await db.insert(messagesTable).values(messageToStore);
 
     if (insertResult.rowsAffected > 0) console.log("Stored!");
