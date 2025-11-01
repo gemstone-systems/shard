@@ -121,6 +121,13 @@ export const resolveDidDoc = async (
 export const atUriRegexp =
     /^at:\/\/([a-zA-Z0-9._:%-]+)(?:\/([a-zA-Z0-9-.]+)(?:\/([a-zA-Z0-9._~:@!$&%')(*+,;=-]+))?)?(?:#(\/[a-zA-Z0-9._~:@!$&%')(*+,;=\-[\]/\\]*))?$/;
 
+export const atUriToString = ({ authority, collection, rKey }: AtUri) => {
+    let result = `at://${authority}`;
+    result += collection ? `/${collection}` : "";
+    result += rKey ? `/${rKey}` : "";
+    return result;
+};
+
 export const stringToAtUri = (str: string): Result<AtUri, unknown> => {
     const isValidAtUri = atUriRegexp.test(str);
     if (!isValidAtUri)
