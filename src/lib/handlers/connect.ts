@@ -5,6 +5,7 @@ import {
 } from "@/lib/sessions";
 import { shardMessageSchema } from "@/lib/types/messages";
 import type { PreHandler, WsRouteHandler } from "@/lib/types/routes";
+import { atUriToString } from "@/lib/utils/atproto";
 import { storeMessageInDb } from "@/lib/utils/gmstn";
 import {
     rawDataToString,
@@ -71,6 +72,9 @@ export const connectWsHandler: WsRouteHandler = (socket, req) => {
         return;
     }
 
+    // convert at uri objects array to set of at uri strings for easier lookup.
+    const socketAllowedChannels = new Set(sessionInfo.allowedChannels.map(channel => atUriToString(channel)));
+
     socket.on("message", (rawData) => {
         const event = rawDataToString(rawData);
 
@@ -96,6 +100,10 @@ export const connectWsHandler: WsRouteHandler = (socket, req) => {
                     console.error(z.treeifyError(error));
                     return;
                 }
+
+                const { channel } = shardMessage
+                if(!socketAllowedChannels.has(channel)) return;
+
                 storeMessageInDb(shardMessage)
                     .then(() => {
                         console.log("stored", shardMessage);
