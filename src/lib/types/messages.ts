@@ -18,6 +18,7 @@ export const shardMessageSchema = websocketMessageSchema
         channel: z.string(),
         content: z.string(),
         sentBy: didSchema,
+        routedThrough: didSchema,
         sentAt: z.coerce.date(),
     })
     .strict();
