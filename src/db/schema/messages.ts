@@ -9,8 +9,6 @@ import { z } from "zod";
 export const messagesTable = sqliteTable(
     "messages",
     {
-        // we do incrementing numbers for now but for goodness sake we need to come up with something better
-        // TODO: id by snowflakes or something more sane.
         id: text("id").primaryKey(),
         channelAtUri: text("channel_at_uri"),
         authorDid: text("author_did").notNull(),
