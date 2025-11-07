@@ -35,6 +35,7 @@
         "@atcute/identity-resolver": "^1.1.4",
         "@atcute/tid": "^1.0.3",
         "@atcute/xrpc-server": "^0.1.2",
+        "@fastify/cors": "^11.1.0",
         "@fastify/websocket": "^11.2.0",
         "@libsql/client": "^0.15.15",
         "dotenv": "^17.2.3",
