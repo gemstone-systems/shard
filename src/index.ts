@@ -18,6 +18,7 @@ const main = async () => {
 
     const server = await setupServer();
     for (const [url, route] of Object.entries(routes)) {
+        console.log("Registering route", url)
         if (!route.wsHandler) {
             const { handler, method, skipRegistrationCheck } = route;
             server.route({

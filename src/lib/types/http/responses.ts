@@ -1,4 +1,5 @@
 import { sessionInfoSchema } from "@/lib/sessions";
+import { didSchema } from "@/lib/types/atproto";
 import { httpResponseErrorInfoSchema } from "@/lib/types/http/errors";
 import { z } from "zod";
 
@@ -16,7 +17,16 @@ export const handshakeResponseSchema = z.object({
 });
 export type HandshakeResponse = z.infer<typeof handshakeResponseSchema>;
 
-export const httpResponseDataSchema = z.union([handshakeResponseSchema]);
+export const getOwnerDidResponseSchema = z.object({
+    registered: z.boolean(),
+    ownerDid: didSchema,
+});
+export type GetOwnerDidResponse = z.infer<typeof getOwnerDidResponseSchema>;
+
+export const httpResponseDataSchema = z.union([
+    handshakeResponseSchema,
+    getOwnerDidResponseSchema,
+]);
 export type HttpResponseData = z.infer<typeof httpResponseDataSchema>;
 
 const httpResponseBaseSchema = z.object({
