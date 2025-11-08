@@ -11,7 +11,8 @@
         "db:push": "drizzle-kit push",
         "lint": "eslint --fix",
         "dev": "tsx src/index.ts",
-        "build": "tsdown src/index.ts"
+        "build": "tsdown src/index.ts",
+        "start": "pnpm build && node dist/index.mjs"
     },
     "keywords": [],
     "author": "",
