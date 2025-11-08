@@ -40,10 +40,5 @@ export const getChannelHistory = async (
         .from(messagesTable)
         .where(eq(messagesTable.channelAtUri, channelAtUriString))
         .limit(100);
-    if (messages.length === 0)
-        return {
-            ok: false,
-            error: "Channel either has no messages, or the provided channel at uri is wrong.",
-        };
     return { ok: true, data: messages };
 };
