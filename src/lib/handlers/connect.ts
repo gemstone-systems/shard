@@ -153,7 +153,7 @@ export const connectWsHandler: WsRouteHandler = (socket, req) => {
                     if (!messagesResult.ok) {
                         console.error(messagesResult.error);
                         throw new Error(
-                            "Channel history function returned 0 results.",
+                            "Something went wrong when trying to get messages from the DB. Check the schema and the connection?",
                         );
                     }
                     const historyMessage: HistoryMessage = {
