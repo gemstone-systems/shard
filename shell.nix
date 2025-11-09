@@ -9,6 +9,7 @@
   pnpm,
   typescript,
   typescript-language-server,
+  docker,
 
   callPackage,
 }:
@@ -25,6 +26,7 @@ mkShellNoCC {
     pnpm
     typescript
     typescript-language-server
+    docker
   ];
 
   shellHook = ''
