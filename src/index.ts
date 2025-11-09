@@ -18,7 +18,7 @@ const main = async () => {
 
     const server = await setupServer();
     for (const [url, route] of Object.entries(routes)) {
-        console.log("Registering route", url)
+        console.log("Registering route", url);
         if (!route.wsHandler) {
             const { handler, method, skipRegistrationCheck } = route;
             server.route({
@@ -62,7 +62,7 @@ const main = async () => {
         }
     }
 
-    server.listen({ port: SERVER_PORT }).catch((err: unknown) => {
+    server.listen({ port: SERVER_PORT, host: "::" }).catch((err: unknown) => {
         server.log.error(err);
         process.exit(1);
     });
