@@ -13,9 +13,8 @@
         "dev": "tsx src/index.ts",
         "build": "tsdown src/index.ts",
         "docker:pre-build": "sed \"s/[\\\"']//g\" .env > .docker.env",
-        "docker:source-env": "ls -a && pwd && source .docker.env",
         "docker:build": "pnpm docker:pre-build && docker build -t gmstn-systems-shard .",
-        "docker:run": "pnpm docker:source-env && docker run -p $SERVER_PORT:$SERVER_PORT gmstn-systems-shard",
+        "docker:run": "source $(eval pwd)/.docker.env && echo $SERVER_PORT && docker run -p $SERVER_PORT:$SERVER_PORT --env-file .docker.env gmstn-systems-shard",
         "start": "pnpm build && node dist/index.mjs"
     },
     "keywords": [],
