@@ -165,7 +165,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
         // we should probably just resolve this properly first but for now, i cba.
         if (storeAtUri.rKey !== SERVICE_DID.slice(8)) {
             mismatchOrIncorrect = true;
-            mismatchReason = `store at record domain did not match with this shard. this shard's domain is ${SERVICE_DID.slice(8)}, the domain on the record is ${storeAtUri.rKey ?? ""}`;
+            mismatchReason = `store at record domain did not match with this shard. this shard's domain is ${SERVICE_DID.slice(8)}, the domain on the record is ${storeAtUri.rKey ?? ""}.`;
             return;
         }
 
@@ -184,7 +184,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
         // FIXME: this also assumes that the requesting lattice's DID is a did:web
         // see above for the rest of the issues.
         if (routeThroughUri.rKey === requestingLatticeDid.slice(8)) {
-            mismatchReason = `route through record domain did not match with requesting service. the requesting service's domain is ${requestingLatticeDid.slice(8)}, the domain on the record is ${routeThroughUri.rKey ?? ""}`;
+            mismatchReason = `route through record domain did not match with requesting service. the requesting service's domain is ${requestingLatticeDid.slice(8)}, the domain on the record is ${routeThroughUri.rKey ?? ""}.`;
             mismatchOrIncorrect = true;
             return;
         }
