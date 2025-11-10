@@ -33,13 +33,18 @@ export const handshakeHandler: RouteHandler = async (req) => {
         handshakeData;
     const allowedChannels = channelAtUriStrings.map((channel) => {
         const res = stringToAtUri(channel);
-        if (!res.ok) return;
+        if (!res.ok) {
+            console.error(JSON.stringify(res.error));
+            return;
+        }
         return res.data;
     });
 
     const verifyJwtResult = await verifyServiceJwt(interServiceJwt);
     if (!verifyJwtResult.ok) {
         const { error } = verifyJwtResult;
+        console.log("Could not verify service JWT");
+        console.log(JSON.stringify(error));
         return newErrorResponse(
             401,
             {
@@ -70,6 +75,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
     });
     if (!constellationResponse.ok) {
         const { error } = constellationResponse;
+        console.log("Constellation errored out", JSON.stringify(error));
         if ("fetchStatus" in error)
             return newErrorResponse(error.fetchStatus, {
                 message:
@@ -102,6 +108,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
     try {
         pdsChannelRecords = await Promise.all(pdsRecordFetchPromises);
     } catch (err) {
+        console.log(JSON.stringify(err));
         return newErrorResponse(500, {
             message:
                 "Something went wrong when fetching backlink channel records. Check the Shard logs if possible.",
@@ -117,6 +124,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
         .array(systemsGmstnDevelopmentChannelRecordSchema)
         .safeParse(pdsChannelRecords);
     if (!channelRecordsParseSuccess) {
+        console.log(JSON.stringify(z.treeifyError(channelRecordsParseError)));
         return newErrorResponse(500, {
             message:
                 "One of the backlinks returned by Constellation did not resolve to a proper lexicon Channel record.",
@@ -132,6 +140,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
 
     let mismatchOrIncorrect = false;
     const requestingLatticeDid = verifyJwtResult.value.issuer;
+    let mismatchReason = "";
 
     channelRecordsParsed.forEach((channel) => {
         if (mismatchOrIncorrect) return;
@@ -141,6 +150,9 @@ export const handshakeHandler: RouteHandler = async (req) => {
         const storeAtRecordParseResult = stringToAtUri(storeAtRecord.uri);
         if (!storeAtRecordParseResult.ok) {
             mismatchOrIncorrect = true;
+            mismatchReason =
+                "could not parse store at record into at uri object," +
+                JSON.stringify(storeAtRecordParseResult.error);
             return;
         }
         const storeAtUri = storeAtRecordParseResult.data;
@@ -153,6 +165,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
         // we should probably just resolve this properly first but for now, i cba.
         if (storeAtUri.rKey !== SERVICE_DID.slice(8)) {
             mismatchOrIncorrect = true;
+            mismatchReason = `store at record domain did not match with this shard. this shard's domain is ${SERVICE_DID.slice(8)}, the domain on the record is ${storeAtUri.rKey ?? ""}`;
             return;
         }
 
@@ -160,6 +173,9 @@ export const handshakeHandler: RouteHandler = async (req) => {
             routeThroughRecord.uri,
         );
         if (!routeThroughRecordParseResult.ok) {
+            mismatchReason =
+                "could not parse route through record into at uri object," +
+                JSON.stringify(routeThroughRecordParseResult.error);
             mismatchOrIncorrect = true;
             return;
         }
@@ -168,17 +184,22 @@ export const handshakeHandler: RouteHandler = async (req) => {
         // FIXME: this also assumes that the requesting lattice's DID is a did:web
         // see above for the rest of the issues.
         if (routeThroughUri.rKey === requestingLatticeDid.slice(8)) {
+            mismatchReason = `route through record domain did not match with requesting service. the requesting service's domain is ${SERVICE_DID.slice(8)}, the domain on the record is ${storeAtUri.rKey ?? ""}`;
             mismatchOrIncorrect = true;
             return;
         }
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (mismatchOrIncorrect)
+    if (mismatchOrIncorrect) {
+        console.log("Channels mismatched.");
+        console.log(mismatchReason)
         return newErrorResponse(400, {
             message:
                 "Channels provided during the handshake had a mismatch between the channel values. Ensure that you are only submitting exactly the channels you have access to.",
+            details: mismatchReason,
         });
+    }
 
     // yipee, it's a valid request :3
 
