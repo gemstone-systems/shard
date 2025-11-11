@@ -188,7 +188,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
 
         // FIXME: this also assumes that the requesting lattice's DID is a did:web
         // see above for the rest of the issues.
-        if (routeThroughUri.rKey === requestingLatticeDid.slice(8)) {
+        if (routeThroughUri.rKey !== requestingLatticeDid.slice(8)) {
             mismatchReason = `route through record domain did not match with requesting service. the requesting service's domain is ${requestingLatticeDid.slice(8)}, the domain on the record is ${routeThroughUri.rKey ?? ""}.`;
             mismatchOrIncorrect = true;
             return;
