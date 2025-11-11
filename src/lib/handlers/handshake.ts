@@ -67,6 +67,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
     // not implemented for now because we support public first
 
     const constellationResponse = await getConstellationBacklink({
+        // TODO: need special exception for did localhost
         subject: `at://${OWNER_DID}/systems.gmstn.development.shard/${SERVICE_DID.slice(8)}`,
         source: {
             nsid: "systems.gmstn.development.channel",
@@ -143,6 +144,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
     let mismatchReason = "";
 
     channelRecordsParsed.forEach((channel) => {
+        console.log(channel);
         if (mismatchOrIncorrect) return;
 
         const { storeAt: storeAtRecord, routeThrough: routeThroughRecord } =
@@ -181,9 +183,12 @@ export const handshakeHandler: RouteHandler = async (req) => {
         }
         const routeThroughUri = routeThroughRecordParseResult.data;
 
+        console.log("requesting");
+        console.log(routeThroughUri.rKey, requestingLatticeDid.slice(8));
+
         // FIXME: this also assumes that the requesting lattice's DID is a did:web
         // see above for the rest of the issues.
-        if (routeThroughUri.rKey !== requestingLatticeDid.slice(8)) {
+        if (routeThroughUri.rKey === requestingLatticeDid.slice(8)) {
             mismatchReason = `route through record domain did not match with requesting service. the requesting service's domain is ${requestingLatticeDid.slice(8)}, the domain on the record is ${routeThroughUri.rKey ?? ""}.`;
             mismatchOrIncorrect = true;
             return;
@@ -193,7 +198,7 @@ export const handshakeHandler: RouteHandler = async (req) => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (mismatchOrIncorrect) {
         console.log("Channels mismatched.");
-        console.log(mismatchReason)
+        console.log(mismatchReason);
         return newErrorResponse(400, {
             message:
                 "Channels provided during the handshake had a mismatch between the channel values. Ensure that you are only submitting exactly the channels you have access to.",
