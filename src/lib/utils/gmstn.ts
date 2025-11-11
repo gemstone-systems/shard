@@ -39,6 +39,6 @@ export const getChannelHistory = async (
         .select()
         .from(messagesTable)
         .where(eq(messagesTable.channelAtUri, channelAtUriString))
-        .limit(100);
+        .limit(100000);
     return { ok: true, data: messages };
 };
