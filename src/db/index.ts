@@ -14,7 +14,7 @@ const db = drizzle(dbClient, { schema });
 export default db;
 
 export const setupDbWithMigrations = async (migrationsFolder: string) => {
-    if (DB_URL !== ":memory:") return;
-    console.log("Performing migrations for an in-memory database.");
+    if (DB_URL !== ":memory:" || !DB_URL.startsWith("file:")) return;
+    console.log("Performing migrations for a non-network database.");
     await migrate(db, { migrationsFolder });
 };

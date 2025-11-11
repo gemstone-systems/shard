@@ -14,7 +14,8 @@ import { routes } from "@/routes";
 import { setupServer } from "@/server";
 
 const main = async () => {
-    if (DB_URL === ":memory:") await setupDbWithMigrations("./drizzle");
+    if (DB_URL === ":memory:" || DB_URL.startsWith("file:"))
+        await setupDbWithMigrations("./drizzle");
 
     const server = await setupServer();
     for (const [url, route] of Object.entries(routes)) {
